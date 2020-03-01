@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="user-mgr-common" />
+        <module name="user-mgr-core" />
+        <module name="user-mgr-server-api" />
+        <module name="user-mgr-store" />
+        <module name="usermgr-api-service" />
+        <module name="usermgr-common" />
+        <module name="usermgr-core" />
+        <module name="usermgr-store" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="user-mgr-common" options="-parameters" />
+      <module name="user-mgr-core" options="-parameters" />
+      <module name="user-mgr-server-api" options="-parameters" />
+      <module name="user-mgr-store" options="-parameters" />
+      <module name="usermgr-api-service" options="-parameters" />
+      <module name="usermgr-common" options="-parameters" />
+      <module name="usermgr-core" options="-parameters" />
+      <module name="usermgr-service" options="-parameters" />
+      <module name="usermgr-store" options="-parameters" />
+    </option>
+  </component>
+</project>

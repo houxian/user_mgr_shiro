@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiku.usermgr.store.dao.UCompanyMapper">
+  <resultMap id="BaseResultMap" type="com.qiku.usermgr.store.model.UCompany">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <id column="company_id" jdbcType="BIGINT" property="companyId" />
+    <result column="company_name" jdbcType="VARCHAR" property="companyName" />
+    <result column="company_des" jdbcType="VARCHAR" property="companyDes" />
+    <result column="crate_date" jdbcType="BIGINT" property="crateDate" />
+    <result column="update_date" jdbcType="BIGINT" property="updateDate" />
+    <result column="status" jdbcType="CHAR" property="status" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, company_id, company_name, company_des, crate_date, update_date, `status`
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="com.qiku.usermgr.store.model.UCompany" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from u_company
+    where id = #{id,jdbcType=BIGINT}
+      and company_id = #{companyId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.qiku.usermgr.store.model.UCompany">
+    delete from u_company
+    where id = #{id,jdbcType=BIGINT}
+      and company_id = #{companyId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.qiku.usermgr.store.model.UCompany" useGeneratedKeys="true">
+    insert into u_company (company_id, company_name, company_des, 
+      crate_date, update_date, `status`
+      )
+    values (#{companyId,jdbcType=BIGINT}, #{companyName,jdbcType=VARCHAR}, #{companyDes,jdbcType=VARCHAR}, 
+      #{crateDate,jdbcType=BIGINT}, #{updateDate,jdbcType=BIGINT}, #{status,jdbcType=CHAR}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.qiku.usermgr.store.model.UCompany" useGeneratedKeys="true">
+    insert into u_company
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="companyId != null">
+        company_id,
+      </if>
+      <if test="companyName != null">
+        company_name,
+      </if>
+      <if test="companyDes != null">
+        company_des,
+      </if>
+      <if test="crateDate != null">
+        crate_date,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+      <if test="status != null">
+        `status`,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="companyId != null">
+        #{companyId,jdbcType=BIGINT},
+      </if>
+      <if test="companyName != null">
+        #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="companyDes != null">
+        #{companyDes,jdbcType=VARCHAR},
+      </if>
+      <if test="crateDate != null">
+        #{crateDate,jdbcType=BIGINT},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=BIGINT},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.qiku.usermgr.store.model.UCompany">
+    update u_company
+    <set>
+      <if test="companyName != null">
+        company_name = #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="companyDes != null">
+        company_des = #{companyDes,jdbcType=VARCHAR},
+      </if>
+      <if test="crateDate != null">
+        crate_date = #{crateDate,jdbcType=BIGINT},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=BIGINT},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=CHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+      and company_id = #{companyId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qiku.usermgr.store.model.UCompany">
+    update u_company
+    set company_name = #{companyName,jdbcType=VARCHAR},
+      company_des = #{companyDes,jdbcType=VARCHAR},
+      crate_date = #{crateDate,jdbcType=BIGINT},
+      update_date = #{updateDate,jdbcType=BIGINT},
+      `status` = #{status,jdbcType=CHAR}
+    where id = #{id,jdbcType=BIGINT}
+      and company_id = #{companyId,jdbcType=BIGINT}
+  </update>
+</mapper>
