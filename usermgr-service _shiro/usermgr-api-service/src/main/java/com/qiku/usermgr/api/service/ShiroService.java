@@ -21,9 +21,9 @@ package com.qiku.usermgr.api.service;
 
 import com.qiku.usermgr.api.holder.SpringContextHolder;
 import com.qiku.usermgr.api.shiro.ShiroRealm;
-import com.qiku.usermgr.store.dao.UMenuMapper;
-import com.qiku.usermgr.store.model.UMenu;
-import com.qiku.usermgr.store.model.UUser;
+import com.qiku.usermgr.store.dao.MenuMapper;
+import com.qiku.usermgr.store.model.Menu;
+import com.qiku.usermgr.store.model.User;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.mgt.RealmSecurityManager;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
@@ -36,7 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -57,7 +56,7 @@ public class ShiroService{
     Logger log = LoggerFactory.getLogger(ShiroService.class);
 
     @Autowired
-    private UMenuMapper uMenuMapper;
+    private MenuMapper uMenuMapper;
     /**
      * 初始化权限
      */
@@ -70,12 +69,12 @@ public class ShiroService{
          */
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<String, String>();
         // 配置退出过滤器,其中的具体的退出代码Shiro已经替我们实现了
-        filterChainDefinitionMap.put("/usermgr/logout", "logout");
-        filterChainDefinitionMap.put("/usermgr/login", "anon");
+        filterChainDefinitionMap.put("/logout", "logout");
+        filterChainDefinitionMap.put("/login", "anon");
         filterChainDefinitionMap.put("/error", "anon");
         // 加载数据库中配置的资源权限列表
-        List<UMenu> menuList = uMenuMapper.findAllMenu();
-        for (UMenu umenus : menuList) {
+        List<Menu> menuList = uMenuMapper.findAllMenu();
+        for (Menu umenus : menuList) {
             if (!StringUtils.isEmpty(umenus.getmUrl()) && !StringUtils.isEmpty(umenus.getmPerms())) {
                 String permission = "perms[" + umenus.getmPerms() + "]";
                 filterChainDefinitionMap.put(umenus.getmUrl(), permission);
@@ -123,7 +122,7 @@ public class ShiroService{
      *
      * @param user
      */
-    public void reloadAuthorizingByUserId(UUser user) {
+    public void reloadAuthorizingByUserId(User user) {
         RealmSecurityManager rsm = (RealmSecurityManager) SecurityUtils.getSecurityManager();
         ShiroRealm shiroRealm = (ShiroRealm) rsm.getRealms().iterator().next();
         Subject subject = SecurityUtils.getSubject();

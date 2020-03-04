@@ -4,14 +4,15 @@ import com.qiku.usermgr.core.page.MybatisPageHelper;
 import com.qiku.usermgr.core.page.PageRequest;
 import com.qiku.usermgr.core.page.PageResult;
 import com.qiku.usermgr.core.service.CurdService;
-import com.qiku.usermgr.store.dao.UMenuMapper;
-import com.qiku.usermgr.store.dao.URoleMapper;
-import com.qiku.usermgr.store.dao.UUserMapper;
-import com.qiku.usermgr.store.dao.UUserRoleMapper;
-import com.qiku.usermgr.store.model.UMenu;
-import com.qiku.usermgr.store.model.URole;
-import com.qiku.usermgr.store.model.UUser;
-import com.qiku.usermgr.store.model.UUserRole;
+import com.qiku.usermgr.store.dao.MenuMapper;
+import com.qiku.usermgr.store.dao.RoleMapper;
+import com.qiku.usermgr.store.dao.UserMapper;
+import com.qiku.usermgr.store.dao.UserRoleMapper;
+import com.qiku.usermgr.store.model.Menu;
+import com.qiku.usermgr.store.model.Role;
+import com.qiku.usermgr.store.model.User;
+import com.qiku.usermgr.store.model.User;
+import com.qiku.usermgr.store.model.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,16 +23,16 @@ import java.util.*;
  * @date 2020-2-26
  */
 @Service
-public class UserService implements CurdService<UUser> {
+public class UserService implements CurdService<User> {
 
 	@Autowired
-	private UUserMapper userMapper;
+	private UserMapper userMapper;
 	@Autowired
-	private UUserRoleMapper userRoleMapper;
+	private UserRoleMapper userRoleMapper;
 	@Autowired
-	private URoleMapper roleMapper;
+	private RoleMapper roleMapper;
 	@Autowired
-	private UMenuMapper uMenuMapper;
+	private MenuMapper uMenuMapper;
 
 	/**
 	 * 添加+编辑
@@ -40,7 +41,7 @@ public class UserService implements CurdService<UUser> {
 	 */
 	@Transactional
 	@Override
-	public int save(UUser record) {
+	public int save(User record) {
 		Long uid = null;
 		if(record.getuId() == null || record.getuId() == 0) {
 			// 新增用户
@@ -55,14 +56,14 @@ public class UserService implements CurdService<UUser> {
 			return 1;
 		}
 		if(uid != null) {
-			for(UUserRole uUserRole:record.getUserRoles()) {
-				uUserRole.setuId(uid);
+			for(UserRole userRole :record.getUserRoles()) {
+				userRole.setuId(uid);
 			}
 		} else {
             userRoleMapper.deleteByPrimaryKey(record.getuId());
 		}
-		for(UUserRole uUserRole:record.getUserRoles()) {
-            userRoleMapper.insertSelective(uUserRole);
+		for(UserRole userRole :record.getUserRoles()) {
+            userRoleMapper.insertSelective(userRole);
 		}
 		return 1;
 	}
@@ -73,7 +74,7 @@ public class UserService implements CurdService<UUser> {
 	 * @return
 	 */
 	@Override
-	public int delete(UUser uUser) {
+	public int delete(User uUser) {
 		return userMapper.deleteByPrimaryKey(uUser.getuId());
 	}
 
@@ -83,8 +84,8 @@ public class UserService implements CurdService<UUser> {
 	 * @return
 	 */
 	@Override
-	public int delete(List<UUser> records) {
-		for(UUser record:records) {
+	public int delete(List<User> records) {
+		for(User record:records) {
 			delete(record);
 		}
 		return 1;
@@ -96,7 +97,7 @@ public class UserService implements CurdService<UUser> {
 	 * @return
 	 */
 	@Override
-	public UUser findById(Long uid) {
+	public User findById(Long uid) {
 		return userMapper.selectByPrimaryKey(uid);
 	}
 
@@ -105,7 +106,7 @@ public class UserService implements CurdService<UUser> {
 	 * @param name
 	 * @return
 	 */
-	public UUser findByName(String name) {
+	public User findByName(String name) {
 		return userMapper.findByName(name);
 	}
 	
@@ -135,19 +136,19 @@ public class UserService implements CurdService<UUser> {
 	private void findUserRoles(PageResult pageResult) {
 		List<?> content = pageResult.getContent();
 		for(Object object:content) {
-			UUser sysUser = (UUser) object;
-			List<UUserRole> userRoles = findUserRoles(sysUser.getId());
+			User sysUser = (User) object;
+			List<UserRole> userRoles = findUserRoles(sysUser.getId());
 			sysUser.setUserRoles(userRoles);
 			sysUser.setRoleNames(getRoleNames(userRoles));
 		}
 	}
 
-	private String getRoleNames(List<UUserRole> userRoles) {
+	private String getRoleNames(List<UserRole> userRoles) {
 
 		StringBuilder sb = new StringBuilder();
-		for(Iterator<UUserRole> iter=userRoles.iterator(); iter.hasNext();) {
-			UUserRole userRole = iter.next();
-			URole uRole = roleMapper.selectByPrimaryKey(userRole.getRoleId());
+		for(Iterator<UserRole> iter = userRoles.iterator(); iter.hasNext();) {
+			UserRole userRole = iter.next();
+			Role uRole = roleMapper.selectByPrimaryKey(userRole.getRoleId());
 			if(uRole == null) {
 				continue ;
 			}
@@ -167,17 +168,17 @@ public class UserService implements CurdService<UUser> {
 	public Set<String> findPermissions(String userName) {
 
 		Set<String> perms = new HashSet<>();
-		List<UMenu> uMenus = uMenuMapper.findByUserName(userName);
-		for(UMenu uMenu:uMenus) {
-			if(uMenu.getmPerms() != null && !"".equals(uMenu.getmPerms())) {
-				perms.add(uMenu.getmPerms());
+		List<Menu> menus = uMenuMapper.findByUserName(userName);
+		for(Menu menu : menus) {
+			if(menu.getmPerms() != null && !"".equals(menu.getmPerms())) {
+				perms.add(menu.getmPerms());
 			}
 		}
 		return perms;
 	}
 
 
-	public List<UUserRole> findUserRoles(Long userId) {
+	public List<UserRole> findUserRoles(Long userId) {
 		return userRoleMapper.findUserRoles(userId);
 	}
 

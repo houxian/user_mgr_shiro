@@ -18,13 +18,12 @@
  * SOFTWARE.
  */
 package com.qiku.usermgr.api.shiro;
-import com.qiku.usermgr.store.dao.UMenuMapper;
-import com.qiku.usermgr.store.dao.URoleMapper;
-import com.qiku.usermgr.store.dao.UUserMapper;
-import com.qiku.usermgr.store.dao.UUserRoleMapper;
-import com.qiku.usermgr.store.model.UMenu;
-import com.qiku.usermgr.store.model.URole;
-import com.qiku.usermgr.store.model.UUser;
+import com.qiku.usermgr.store.dao.MenuMapper;
+import com.qiku.usermgr.store.dao.RoleMapper;
+import com.qiku.usermgr.store.dao.UserMapper;
+import com.qiku.usermgr.store.model.Menu;
+import com.qiku.usermgr.store.model.Role;
+import com.qiku.usermgr.store.model.User;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -54,11 +53,11 @@ import java.util.Set;
 public class ShiroRealm extends AuthorizingRealm {
 
     @Resource
-    private UUserMapper uUserMapper;
+    private UserMapper uUserMapper;
     @Resource
-    private UMenuMapper menuMapper;
+    private MenuMapper menuMapper;
     @Resource
-    private URoleMapper uRoleMapper;
+    private RoleMapper roleMapper;
 
     /**
      * 提供账户信息返回认证信息（用户的角色信息集合）
@@ -67,7 +66,7 @@ public class ShiroRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
         //获取用户的输入的账号.
         String username = (String) token.getPrincipal();
-        UUser user = uUserMapper.findByName(username);
+        User user = uUserMapper.findByName(username);
         if (user == null) {
             throw new UnknownAccountException("账号不存在！");
         }
@@ -95,14 +94,14 @@ public class ShiroRealm extends AuthorizingRealm {
         Long userId = (Long) SecurityUtils.getSubject().getPrincipal();
 
         // 赋予角色
-        List<URole> roleList = uRoleMapper.getRoleListByUid(userId);
-        for (URole role : roleList) {
+        List<Role> roleList = roleMapper.getRoleListByUid(userId);
+        for (Role role : roleList) {
             info.addRole(role.getRoleName());
         }
 
         // 赋予权限
-        List<UMenu> menuList = null;
-        UUser user = uUserMapper.selectByPrimaryKey(userId);
+        List<Menu> menuList = null;
+        User user = uUserMapper.selectByPrimaryKey(userId);
         if (null == user) {
             return info;
         }
@@ -110,7 +109,7 @@ public class ShiroRealm extends AuthorizingRealm {
         menuList = menuMapper.findMenuByUid(userId);
         if (!CollectionUtils.isEmpty(menuList)) {
             Set<String> permissionSet = new HashSet<>();
-            for (UMenu menus : menuList) {
+            for (Menu menus : menuList) {
                 String permission = null;
                 if (!StringUtils.isEmpty(permission = menus.getmPerms())) {
                     permissionSet.addAll(Arrays.asList(permission.trim().split(",")));

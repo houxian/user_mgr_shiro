@@ -6,13 +6,18 @@ import com.qiku.usermgr.api.service.UserService;
 import com.qiku.usermgr.api.vo.LoginBean;
 import com.qiku.usermgr.common.utils.IOUtils;
 import com.qiku.usermgr.core.http.BaseResponse;
-import com.qiku.usermgr.store.model.UUser;
+import com.qiku.usermgr.store.model.User;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.UnauthorizedException;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.google.code.kaptcha.Constants;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.servlet.ModelAndView;
+
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -30,6 +35,14 @@ public class LoginController {
     @Autowired
     UserService userService;
 
+    @ExceptionHandler({UnauthorizedException.class})
+    public BaseResponse processUnauthenticatedException(NativeWebRequest request,
+                                                        UnauthorizedException e) {
+        ModelAndView mv = new ModelAndView();
+        mv.addObject("exception", e.getMessage());
+        mv.setViewName("refuse");
+        return BaseResponse.Ok().putData("没有权限");
+    }
 
     @GetMapping("captcha.jpg")
     public void captcha(HttpServletResponse response, HttpServletRequest request) throws ServletException, IOException {
@@ -65,7 +78,7 @@ public class LoginController {
 //        }
 
         // 用户信息
-        UUser user = userService.findByName(username);
+        User user = userService.findByName(username);
         // 账号不存在、密码错误
         if (user == null) {
             return BaseResponse.Fail("账号不存在");
@@ -95,5 +108,25 @@ public class LoginController {
     public BaseResponse logout(HttpServletRequest request)  {
 
         return  BaseResponse.Ok();
+    }
+    /**
+     * 刷新token
+     */
+    @RequiresPermissions("sys:user:view")
+    @PostMapping(value = "/test")
+    public BaseResponse test(@RequestBody LoginBean loginBean, HttpServletRequest request)  {
+
+        return  BaseResponse.Ok().putData("HSJFAHFJSHFJ");
+    }
+    /**
+     * 未登录
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/unauth")
+    @ResponseBody
+    public BaseResponse unauth(HttpServletRequest request) throws Exception {
+        return  BaseResponse.Ok().putData("请重新登录");
     }
 }

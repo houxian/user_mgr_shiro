@@ -6,8 +6,8 @@ import com.qiku.usermgr.api.utils.VerifyCodeUtils;
 import com.qiku.usermgr.core.http.BaseResponse;
 import com.qiku.usermgr.core.page.PageRequest;
 import com.qiku.usermgr.core.page.PageResult;
-import com.qiku.usermgr.store.model.UUser;
-import com.qiku.usermgr.store.model.UUserRole;
+import com.qiku.usermgr.store.model.User;
+import com.qiku.usermgr.store.model.UserRole;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +37,9 @@ public class UserController {
 	 * @return
 	 */
 	@PostMapping(value="/save")
-	public BaseResponse save(@RequestBody UUser record) {
+	public BaseResponse save(@RequestBody User record) {
 
-		UUser user = userService.findById(record.getuId());
+		User user = userService.findById(record.getuId());
 		if(record.getPwd() != null) {
 			String salt = VerifyCodeUtils.generateVerifyCode(6);
 			if(user == null) {
@@ -67,13 +67,13 @@ public class UserController {
 	 */
 	@GetMapping(value="/findByName")
 	public BaseResponse findByUserName(@RequestParam String name) {
-		UUser uUser = null;
+		User user = null;
 		try {
-			uUser = userService.findByName(name);
+			user = userService.findByName(name);
 		} catch (Exception ex) {
 			log.error(ex.getMessage());
 		}
-		return BaseResponse.Ok().putData(uUser);
+		return BaseResponse.Ok().putData(user);
 	}
 
 	/**
@@ -101,13 +101,13 @@ public class UserController {
 	@GetMapping(value="/findUserRoles")
 	public BaseResponse findUserRoles(@RequestParam Long userId) {
 
-		List<UUserRole> uUserRoles = null;
+		List<UserRole> userRoles = null;
 		try {
-			uUserRoles =  userService.findUserRoles(userId);
+			userRoles =  userService.findUserRoles(userId);
 		}catch (Exception ex){
 			log.error(ex.getMessage());
 		}
-		return BaseResponse.Ok().putData(uUserRoles);
+		return BaseResponse.Ok().putData(userRoles);
 	}
 
 	/**
